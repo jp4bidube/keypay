@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>KeyPay Pagamento - Sandbox Checkout</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@2.0/dist/css/pretty-print-json.css>
+    <link href="styles.css" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+</head>
+<body>
+
+<nav class="navbar bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="logo.png" alt="Bootstrap">
+        </a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="area" id="checkout">
+
+
+        <form id="cc-form">
+            <div id="alert">
+
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <fieldset class="border p-4">
+                        <legend class="float-none w-auto">Produto</legend>
+                        <input placebolder="Hash Visitante" id="hash" type="hidden" name="order[hash]" value=""/>
+
+                        <label>Produto</label>
+                        <input placebolder="Produto" type="text" name="order[product]" value="Produto Teste"/>
+
+                        <label>Valor</label>
+                        <input placebolder="Valor" type="text" id="valor" name="order[amount]" value="1.00"/>
+
+
+                        <input placebolder="" type="hidden" name="order[currency]" value="BRL"/>
+                        <input placebolder="" type="hidden" name="order[ip_client]" value="192.168.0.1"/>
+                    </fieldset>
+
+                    <fieldset class="border p-4">
+
+                        <legend class="float-none w-auto">Cliente</legend>
+
+                        <label>Nome Cliente</label>
+                        <input placebolder="" style="width: 100%" type="text" name="customer[name]"
+                               value="Antonio Mariano Silva"/>
+
+                        <label>CPF</label>
+                        <input placebolder="" id="cpf" data-mask="000.000.000-00" style="width: 100%" type="text"
+                               name="customer[vat]"
+                               value="000.000.000-11"/>
+
+                        <label>Data Nascimento</label>
+                        <input placebolder="" style="width: 100%" type="date" name="customer[dob]" value="1982-01-01"/>
+
+                        <label>Telefone</label>
+                        <input placebolder="" style="width: 100%" type="text" name="customer[phone]"
+                               value="(11) 9999-9999" data-mask="(00) 0000-0000"/>
+
+                        <label>Email</label>
+                        <input placebolder="" style="width: 100%" type="text" name="customer[email]"
+                               value="teste@teste.com"/>
+                    </fieldset>
+                </div>
+                <div class="col-sm-12 col-md-6">
+                    <fieldset class="border p-4">
+                        <legend class="float-none w-auto">Pagamento</legend>
+
+                        <div class="row">
+                            <div class="col-sm-12 col-md-4">
+                                <label>Total</label>
+                                <input placebolder="Total" size="6" readonly="readonly" type="text" id="total"
+                                       name="payment[amount]" value="1.00"/>
+
+                            </div>
+                            <div class="col-sm-12 col-md-4">
+                                <label>Metodo</label>
+                                <select name="payment[type]">
+                                    <option value="credit">Crédito</option>
+                                    <option value="debit">Débito</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-12 col-md-4">
+                                <label>Parcelas</label>
+                                <select name="payment[installments]">
+                                    <option value="1">1x</option>
+                                    <option value="2">2x</option>
+                                    <option value="3">3x</option>
+                                    <option value="4">4x</option>
+                                    <option value="5">5x</option>
+                                    <option value="6">6x</option>
+                                    <option value="7">7x</option>
+                                    <option value="8">8x</option>
+                                    <option value="9">9x</option>
+                                    <option value="10">10x</option>
+                                    <option value="11">11x</option>
+                                    <option value="12">12x</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <div class="card-wrapper"></div>
+
+                        <label>Nome no Cartao</label>
+                        <input placebolder="CardHolder" type="text" id="card_holder" name="payment[card_holder]"
+                               value=""/>
+                        <br>
+                        <label>Numero Cartao</label>
+                        <input placebolder="Numero Cartao" type="tel" id="pan" name="payment[pan]"
+                               value=""/>
+                        <br>
+
+                        <label>Vencimento</label>
+                        <input size="10" placebolder="Vencimento" type="tel" id="expirydate"
+                               name="payment[expirydate]"
+                               value=""/>
+
+                        <br>
+                        <label>CCV</label>
+                        <input size="3" placebolder="CVV" type="number" id="cvv" name="payment[cvv]" value=""/>
+
+
+                        <hr>
+                        <h4>1Click</h4>
+
+                        <label>Utilizar cartão salvo</label>
+                        <select id="wallet_uuid" name="payment[wallet_uuid]">
+                            <option></option>
+                        </select>
+                        <br>
+                        <br>
+                        <label>Salvar cartão para compras futuras?</label>
+                        <select name="payment[wallet_add]">
+                            <option value="false">Não</option>
+                            <option value="true">Sim</option>
+                        </select>
+
+                        <br>
+                        <label>Identificador Cliente 1Click</label>
+                        <input type="text" id="wallet_customer_identifier" name="payment[wallet_customer_identifier]"
+                               value=""/>
+                        <hr>
+                        <div class="d-grid gap-2 pt-4">
+                            <label>Tipo de Transação</label>
+                            <select name="payment[transaction_type]">
+                                <option value="authorization">Pagamento</option>
+                                <option value="preauthorization">Pre-Autorização</option>
+                            </select>
+                            <button type="submit" class="btn btn-success btn-lg btn-block">Pagar</button>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </form>
+        <h4>DEBUG API:</h4>
+        <small><a onclick="confirmClear()" href="javascript:void(0)">Limpar Debug</a></small>
+        <pre id="logs" class="json-container"></pre>
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="myModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Autenticação de Segurança</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form target="myIframe" id="formIframe" method="post"
+                      action="" name="datos">
+                    <input type="hidden" name="creq" value="" id="creq"/>
+                </form>
+                <iframe name="myIframe" width="100%" height="500" frameborder="0"
+                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
+                        allowtransparency="true">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
+
+<style>
+    body {
+        background: #efefef;
+    }
+
+    pre {
+        background-color: ghostwhite;
+        border: 1px solid silver;
+        padding: 10px 20px;
+        margin: 20px;
+        border-radius: 4px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+</style>
+<script
+        src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script src="jquery.serializeJson.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/card/2.5.4/jquery.card.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+        integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pretty-print-json@2.0/dist/pretty-print-json.min.js"></script>
+<script>
+    $('body').on('hidden.bs.modal', '.modal', function () {
+        $(this).removeData('bs.modal');
+    });
+
+    function confirmClear() {
+        if (window.confirm("Deseja realmente limpar os dados abaixo?")) {
+            $('#logs').html('')
+        }
+    }
+
+    if (window.addEventListener) {
+        window.addEventListener("message", onMessage, false);
+    } else if (window.attachEvent) {
+        window.attachEvent("onmessage", onMessage, false);
+    }
+
+    function onMessage(event) {
+        // Check sender origin to be trusted
+        $('#myModal').hide()
+        $('#myModal').modal('hide')
+
+        var data = event.data;
+
+        console.log(data)
+        if (typeof (window[data.func]) == "function") {
+            window[data.func].call(null, data.dados, data.message1, data.message2);
+        }
+    }
+
+    function error(dados, msg1, msg2) {
+
+        console.log(dados, msg1, msg2)
+        Swal.hideLoading()
+        Swal.close()
+        Swal.fire({
+            title: msg1,
+            text: msg2,
+            icon: "error",
+        });
+
+        $('#logs').append('<br><code>// Response: URL Retorno <br>' + prettyPrintJson.toHtml({
+            'statusCode': 400,
+            'data': JSON.parse(dados)
+        }) + '</code><br>')
+
+    }
+
+
+    function success(dados, msg1, msg2) {
+        console.log(dados, msg1, msg2)
+        Swal.hideLoading()
+        Swal.close()
+
+
+        Swal.fire({
+            title: msg1,
+            text: msg2,
+            icon: "success",
+        })
+
+        $('#logs').append('<br><code>// Response: URL Retorno <br>' + prettyPrintJson.toHtml(JSON.parse(dados)) + '</code><br>')
+    }
+
+
+    var hash = "";
+
+    async function sha256(message) {
+        // encode as UTF-8
+        const msgBuffer = new TextEncoder().encode(message);
+
+        // hash the message
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+
+        // convert ArrayBuffer to Array
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+        // convert bytes to hex string
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+    }
+
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+
+        $.each(a, function () {
+
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+
+    $(document).ready(function () {
+
+        $('#wallet_customer_identifier').val($('#cpf').val().replace(/\D/g, ""))
+
+        $('#wallet_uuid').on('change', function () {
+            if (this.value != '') {
+                $('#pan').val('')
+                $('#expirydate').val('')
+                $('#card_holder').val('')
+                $('#cvv').val('')
+            }
+        })
+
+        $('#cpf').on('keyup', function () {
+            var cpf = this.value.replace(/\D/g, "");
+            $('#wallet_customer_identifier').val(cpf)
+
+            if (cpf.length == 11) {
+
+                Swal.fire({
+                    title: 'KeyPay 1Click',
+                    html: 'Localizando carteira associada a este CPF',
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                })
+
+                $.ajax({
+                    url: 'https://hml-meuportal.keypaypagamentos.com.br/api/v1/ecommerce/wallet/' + cpf + '/',
+                    method: "GET",
+                    timeout: 0,
+                    headers: {
+                        "Authorization": "Token 4f32458db75635684c6b709002dd0e3362af1c43",
+                        "Content-Type": "application/json"
+                    },
+                    success: function (data) {
+                        console.log(data)
+
+                        $('#logs').append('<br><code>// Response: https://hml-meuportal.keypaypagamentos.com.br/api/v1/ecommerce/wallet/' + cpf + '/ <br>' + prettyPrintJson.toHtml(data) + '</code><br>')
+
+                        $('#wallet_uuid option').remove()
+                        if (data.count == 0) {
+                            $('#wallet_uuid').append('<option value="">Nenhum cartão salvo para este cliente</option>')
+                        } else {
+                            $('#wallet_uuid').append('<option value="">Selecione um cartão</option>')
+                        }
+
+                        $.each(data.results, function (index, item) {
+                            console.log(index, item)
+                            $('#wallet_uuid').append('<option value="' + item.uuid + '">**** **** **** ' + item.ultimos4 + '</option>')
+
+                        })
+                        Swal.hideLoading()
+                        Swal.close()
+                    },
+                    error: function (data) {
+
+                        Swal.hideLoading()
+                        Swal.close()
+
+                        console.log(data.responseJSON)
+                        if ('message' in data.responseJSON) {
+                            var message = data.responseJSON.message
+                        } else {
+                            var message = data.responseJSON.errors[0].message
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Atenção',
+                            text: message
+                        })
+
+                        $('#logs').append('<br><code>// Response: https://hml-meuportal.keypaypagamentos.com.br/api/v1/ecommerce/payment/ <br>' + prettyPrintJson.toHtml(data.responseJSON) + '</code><br>')
+                    }
+
+                })
+
+
+            }
+        })
+        $('#valor').on('keyup', function () {
+            $('#total').val(this.value)
+        })
+        $('form').card({
+            container: '.card-wrapper',
+            formSelectors: {
+                numberInput: 'input#pan', // optional — default input[name="number"]
+                expiryInput: 'input#expirydate', // optional — default input[name="expiry"]
+                cvcInput: 'input#cvv', // optional — default input[name="cvc"]
+                nameInput: 'input#card_holder' // optional - defaults input[name="name"]
+            },
+            formatting: true, // optional - default true
+
+            placeholders: {
+                number: '••••••••••••••••',
+                name: 'Nome Cartão',
+                expiry: '••/••••',
+                cvc: '•••'
+            },
+            debug: false // optional - default false
+        });
+
+        sha256(new Date().getDate()).then((data) => {
+            $('#hash').val(data)
+            $('#logs').html('<code>// Hash:' + data + '</code>')
+            hash = data
+        })
+
+        function getErrorMsg(data) {
+            var msg = ''
+            $.each(data, function (i, e) {
+                msg = msg + '[' + i.message + ']'
+            })
+
+
+            return msg
+        }
+
+
+        function errorMsg(data) {
+            var msg = ''
+            $.each(data, function (i, e) {
+                msg = msg + '[' + i.toUpperCase() + ']'
+                $.each(e, function (ii, ee) {
+                    msg = msg + '[' + ii.toUpperCase() + ']' + ee + '\n'
+                })
+            })
+
+
+            return msg
+        }
+
+        $('#cc-form').on('submit', function (e) {
+            e.preventDefault();
+            var arr = $('#cc-form').serializeJSON();
+            console.log(arr)
+
+            arr.payment.pan = arr.payment.pan.replaceAll(" ", "")
+            arr.order.amount = new Number(arr.order.amount)
+            arr.payment.amount = new Number(arr.payment.amount)
+            arr.payment.installments = new Number(arr.payment.installments)
+
+
+            $('#logs').append('<br><code>// Request: https://hml-meuportal.keypaypagamentos.com.br/api/v1/ecommerce/payment/ <br>' + prettyPrintJson.toHtml(arr) + '</code><br>')
+
+            Swal.fire({
+                title: 'Aguarde, processando pagamento',
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading()
+                    $.ajax({
+                        url: "https://hml-meuportal.keypaypagamentos.com.br/api/v1/ecommerce/payment/",
+                        method: "POST",
+                        dataType: "json",
+                        contentType: "application/json",
+                        headers: {
+                            "Authorization": "Token 4f32458db75635684c6b709002dd0e3362af1c43",
+                            "Content-Type": "application/json"
+                        },
+                        data: JSON.stringify(arr),
+                        success: function (data, textStatus, xhr) {
+                            Swal.hideLoading()
+                            Swal.close()
+
+                            if (xhr.status == 200) {
+                                console.log(data)
+                                document.getElementById('formIframe').action = data.payment.emv3ds.acsURL
+                                document.getElementById('creq').value = data.payment.emv3ds.creq
+                                document.getElementById("formIframe").submit();
+                            } else {
+                                Swal.fire({
+                                    title: 'Transação Aprovada',
+                                    text: 'Parabens, sua transação foi aprovada direto',
+                                    icon: "success",
+                                })
+                            }
+                            $('#logs').append('<br><code>// Rsponse: https://hml-meuportal.keypaypagamentos.com.br/api/v1/ecommerce/payment/ <br>' + prettyPrintJson.toHtml(data) + '</code><br>')
+                            $('#myModal').modal('show')
+                        },
+                        error: function (data) {
+
+                            console.log(data)
+
+                            Swal.hideLoading()
+                            Swal.close()
+
+
+                            console.log(data.responseJSON)
+                            if ('message' in data.responseJSON) {
+                                var message = data.responseJSON.message
+                            } else {
+                                var message = data.responseJSON.errors[0].message
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Não foi possivel processar seu pagamento',
+                                text: message
+                            })
+
+                            $('#logs').append('<br><code>// Response: https://hml-meuportal.keypaypagamentos.com.br/api/v1/ecommerce/payment/ <br>' + prettyPrintJson.toHtml(data.responseJSON) + '</code><br>')
+                        }
+                    })
+                },
+                willClose: () => {
+
+                }
+            })
+        });
+
+    })
+
+
+</script>
