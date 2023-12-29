@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <title>Emplacamento digital</title>
 
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css" rel="stylesheet">
@@ -12,7 +13,6 @@
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
 </head>
 
 <body>
@@ -27,7 +27,7 @@
 
     <div class="container">
         <div class="area" id="checkout">
-            <button onclick="comunicarPai()">Teste mensagem</button>
+           
             <form id="cc-form">
                 <div id="alert">
                 </div>
@@ -173,7 +173,7 @@
         </div>
 
     </div>
-
+    
 
     <div class="modal fade" id="myModal" tabindex="-1">
         <div class="modal-dialog">
@@ -192,8 +192,8 @@
                         allowtransparency="true">
                     </iframe>
                 </div>
-                <div>
-                    <button id="consultaTransacao" type="button" onclick="consultaCartao()">Consultar transacao</button>
+                <div style="width: 100%; display: flex; justify-content: center; padding-top: 5px; padding-bottom: 5px;">
+                    <button style="background-color:#328da8; border:none" class="class=btn btn-success btn-lg btn-block" id="consultaTransacao" type="button" onclick="consultaCartao()">Consultar transacao</button>
                 </div>
             </div>
         </div>
@@ -251,15 +251,6 @@
         window.addEventListener("message", onMessage, false);
     } else if (window.attachEvent) {
         window.attachEvent("onmessage", onMessage, false);
-    }
-
-    function comunicarPai() {
-
-        const mensagemParaPai = {
-            success: true
-        }
-
-        window.parent.postMessage(mensagemParaPai, `*`)
     }
 
     function onMessage(event) {
@@ -396,7 +387,7 @@
             success: function (data, textStatus, xhr) {
                 Swal.fire({
                     title: 'Pagamento realizado com sucesso.',
-                    html: '',
+                    html: 'Clique no botão de fechar para continuar.',
                     timerProgressBar: true,
                 })
             },
@@ -447,7 +438,7 @@
         accessToken = new URLSearchParams(url.search).get("accessToken")
         refreshToken = new URLSearchParams(url.search).get("refreshToken")
 
-        getDebts(vehicleId)
+        // getDebts(vehicleId)
 
         clearValue()
 
