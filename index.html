@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>KeyPay Pagamento - Sandbox Checkout</title>
+    <title>Emplacamento digital</title>
 
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css" rel="stylesheet">
     <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@2.0/dist/css/pretty-print-json.css>
@@ -19,7 +19,7 @@
 
 <body>
 
-    <nav class="navbar bg-light">
+    <nav style="display: none;" class="navbar bg-light">
         <div class="container">
             <a class="navbar-brand" href="#">
                 <img src="logo.png" alt="Bootstrap">
@@ -57,7 +57,7 @@
                             <legend class="float-none w-auto">Cliente</legend>
 
                             <label>Nome Cliente</label>
-                            <input placebolder="" style="width: 100%" type="text" name="customer[name]"
+                            <input placebolder="" id="clientName" style="width: 100%" type="text" name="customer[name]"
                                 value="Antonio Mariano Silva" />
 
                             <label>CPF</label>
@@ -65,15 +65,15 @@
                                 name="customer[vat]" value="000.000.000-11" />
 
                             <label>Data Nascimento</label>
-                            <input placebolder="" style="width: 100%" type="date" name="customer[dob]"
+                            <input placebolder="" id="birthDate" style="width: 100%" type="date" name="customer[dob]"
                                 value="1982-01-01" />
 
                             <label>Telefone</label>
-                            <input placebolder="" style="width: 100%" type="text" name="customer[phone]"
+                            <input placebolder="" id="phone" style="width: 100%" type="text" name="customer[phone]"
                                 value="(11) 9999-9999" data-mask="(00) 0000-0000" />
 
                             <label>Email</label>
-                            <input placebolder="" style="width: 100%" type="text" name="customer[email]"
+                            <input placebolder="" id="email" style="width: 100%" type="text" name="customer[email]"
                                 value="teste@teste.com" />
                         </fieldset>
                     </div>
@@ -84,8 +84,8 @@
                             <div class="row">
                                 <div class="col-sm-12 col-md-4">
                                     <label>Total</label>
-                                    <input placebolder="Total" size="6" readonly="readonly" type="text"
-                                        id="total" name="payment[amount]" value="1.00" />
+                                    <input placebolder="Total" size="6" type="text" readonly="readonly" id="total"
+                                        name="payment[amount]" value="1.00" />
 
                                 </div>
                                 <div class="col-sm-12 col-md-4">
@@ -137,7 +137,7 @@
 
 
                             <div style="display: none">
-                                <hr >
+                                <hr>
                                 <h4>1Click</h4>
 
                                 <label>Utilizar cartão salvo</label>
@@ -184,7 +184,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Autenticação de Segurança</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="consultaCartao()"></button>
                 </div>
                 <div class="modal-body">
                     <form target="myIframe" id="formIframe" method="post" action="" name="datos">
@@ -194,6 +194,9 @@
                         sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
                         allowtransparency="true">
                     </iframe>
+                </div>
+                <div>
+                    <button id="consultaTransacao" type="button" onclick="consultaCartao()">Consultar transacao</button>
                 </div>
             </div>
         </div>
@@ -230,6 +233,13 @@
     crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/pretty-print-json@2.0/dist/pretty-print-json.min.js"></script>
 <script>
+    let vehicleId
+    let accessToken
+    let refreshToken
+    let urlEmplacamentoDigital = "http://localhost:8080/api"
+    let total
+    let uuiId
+
     $('body').on('hidden.bs.modal', '.modal', function () {
         $(this).removeData('bs.modal');
     });
@@ -330,7 +340,110 @@
     };
 
 
+    async function getDebts(id, accessToken) {
+        $.ajax({
+            url: `${urlEmplacamentoDigital}/payment/getDebts?vehicleRegistrationId=${id}`,
+            method: "GET",
+            timeout: 0,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: function (data) {
+                console.log(data)
+
+                total = data?.data?.total
+
+                $('#total').val(total);
+            },
+            error: async function (data) {
+                if (data.status == 401) {
+                    let result = await refreshTokens()
+                    console.log(result)
+                }
+            }
+        })
+    }
+
+    function clearValue() {
+        $('#clientName').val('')
+        $('#cpf').val('')
+        $('#birthDate').val('')
+        $('#phone').val('')
+        $('#email').val('')
+    }
+
+    function conciliarCartao(data) {
+        console.log("** conciliar cartao **")
+        let object = {...data}
+        object.vehicleRegistrationId = vehicleId
+        console.log(object)
+        
+        $.ajax({
+            url: `${urlEmplacamentoDigital}/payment/confirmCreditPayment`,
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify(object),
+            success: function (data, textStatus, xhr) {
+                Swal.fire({
+                        title: 'Pagamento realizado com sucesso.',
+                        html: '',
+                        timerProgressBar: true,
+                    })
+            },
+            error: function (data) {
+            }
+        })
+    }
+
+
+    function consultaCartao() {
+        $.ajax({
+            url: `https://hml-meuportal.keypaypagamentos.com.br/api/v1/ecommerce/payment/${uuiId}/`,
+            method: "GET",
+            timeout: 0,
+            headers: {
+                "Authorization": "Token 4f32458db75635684c6b709002dd0e3362af1c43",
+                "Content-Type": "application/json"
+            },
+            success: function (data) {
+                console.log(data)
+                console.log(data.status)
+                if (data.status === "Pré-Autorizado") {
+                    conciliarCartao(data)
+                } else {
+                    Swal.fire({
+                        title: 'Ocorreu um erro ao finalizar seu pagamento.',
+                        html: 'Por favor, contate a operadora do cartão',
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    })
+                }
+            },
+            error: async function (data) {
+                if (data.status == 401) {
+                    let result = await refreshTokens()
+                    console.log(result)
+                }
+            }
+        })
+    }
+
     $(document).ready(function () {
+        let currentUrl = window.location.href
+        let url = new URL(currentUrl)
+        vehicleId = new URLSearchParams(url.search).get("id")
+        accessToken = new URLSearchParams(url.search).get("accessToken")
+        refreshToken = new URLSearchParams(url.search).get("refreshToken")
+
+        getDebts(vehicleId)
+
+        clearValue()
 
         $('#wallet_customer_identifier').val($('#cpf').val().replace(/\D/g, ""))
 
@@ -497,6 +610,7 @@
 
                             if (xhr.status == 200) {
                                 console.log(data)
+                                uuiId = data.payment.uuid
                                 document.getElementById('formIframe').action = data.payment.emv3ds.acsURL
                                 document.getElementById('creq').value = data.payment.emv3ds.creq
                                 document.getElementById("formIframe").submit();
