@@ -616,8 +616,8 @@
             console.log(arr)
 
             arr.payment.pan = arr.payment.pan.replaceAll(" ", "")
-            arr.order.amount = new Number(arr.payment.amount)
-            arr.payment.amount = new Number(arr.payment.amount)
+            arr.order.amount =  new Number(1.0) //new Number(arr.payment.amount)
+            arr.payment.amount =  new Number(1.0) //new Number(arr.payment.amount)
             arr.payment.installments = new Number(arr.payment.installments)
 
 
